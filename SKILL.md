@@ -1,7 +1,7 @@
 ---
 name: distill-kb
 description: "本地知识库（~/Documents/KnowledgeBase）自动维护、检索与汇总：增量扫描、AI按v2标准逐篇蒸馏（含失效传播与冲突标注）、BM25检索、按标签/实体汇总。维护或查询知识库、往库中放资料、要求汇总资料时使用。"
-version: 2.0.0
+version: 2.1.0
 author: aloasut
 license: MIT
 metadata:
@@ -45,6 +45,7 @@ CLI：`python3 ~/.hermes/skills/note-taking/knowledge-base/scripts/kb.py <子命
 3. 对每篇：
    - 通读原文（`KB_ROOT/<rel>`）；非文本/损坏/超大读不动 → `mark REL failed --reason "..."`
    - **先检索既有笔记**（`search` 关键词 / `notes --tag`）：发现与已有笔记说法冲突 → 新旧笔记互相写 `conflicts_with`；发现新资料明确推翻旧结论 → 按硬规则做失效传播（改旧笔记）
+   - 跨层互引：若主题在其他 skill/agentmemory 有配套条目（SOP、服务细节），笔记「细节补充」写明互引；本库存放依据与检索笔记，不复制 SOP 全文
    - 按"蒸馏笔记规范 v2"写笔记到 `notepath REL` 给出的路径
    - `mark REL done --title "<短标题>"`
 4. 全部处理完再跑 `scan`（同步状态）和 `status`，报告新增/蒸馏/失败数。
@@ -99,6 +100,7 @@ conflicts_with: [<可选：与本库哪些笔记说法冲突，写对方源路�
 - **冲突标注**（吸收 Lemmalog 矛盾候选思想）：双方说法不同但都未被推翻（如群聊 vs 研报的口径差异）→ 两篇笔记 frontmatter **互相**写 `conflicts_with: [对方源路径]`，并在各自细节补充保留文字说明。
 - 原文更新后状态自动回 pending，须重蒸馏（笔记直接覆写，frontmatter 的 distilled_at 更新）。
 - 大文件（>100KB）：优先蒸馏可检索的结论与问答锚点，细节注明"详见原文"。
+- 来源自包含：微信文章、群聊、网页等链接易失效/被删。Agent 自己整理研究落库时，关键数据、命令、结论必须直接写进源文档，URL 仅作溯源，保证链接失效后资料仍有完整价值。
 
 ### 非文本资料
 
